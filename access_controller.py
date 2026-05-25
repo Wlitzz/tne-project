@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
 # Configuration
-BROKER = "broker.hivemq.com"
+BROKER = "192.168.12.100"
 PORT = 1883
 STUDENT_ID = "104390459" 
 COMMAND_TOPIC = f"{STUDENT_ID}/admin/access_control"
@@ -11,7 +11,7 @@ PUBLIC_TOPIC = "public"
 def on_connect(client, userdata, flags, reason_code, properties=None):
     print(f"Connected to {BROKER} with code: {reason_code}")
     
-    # Subscribe to our required topics
+    # Subscribe to the required topics
     client.subscribe(COMMAND_TOPIC)
     client.subscribe(PUBLIC_TOPIC)
     print(f"Listening on: \n - {COMMAND_TOPIC}\n - {PUBLIC_TOPIC}")
@@ -27,12 +27,12 @@ def on_message(client, userdata, msg):
     
     # If the message is a direct command, execute the fake action
     if topic == COMMAND_TOPIC:
-        print(f"⚡ ACTION REQUIRED: {payload} ⚡")
+        print(f" ACTION REQUIRED: {payload} ")
     elif topic == PUBLIC_TOPIC:
         print(f"Broadcast: {payload}")
 
 # Setup the MQTT Client
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 

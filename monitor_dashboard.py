@@ -2,15 +2,15 @@ import paho.mqtt.client as mqtt
 import json
 
 # Configuration
-BROKER = "broker.hivemq.com"
+BROKER = "192.168.12.100"
 PORT = 1883
-STUDENT_ID = "104390459" # Ensure this matches the other files!
+STUDENT_ID = "104390459" 
 SENSOR_TOPIC = f"{STUDENT_ID}/audit/logs/server-A"
 COMMAND_TOPIC = f"{STUDENT_ID}/admin/access_control"
 
 # Global variable to track suspicious activity
 failed_login_count = 0
-THRESHOLD = 3 # How many failed logins before we lock it down?
+THRESHOLD = 3 # How many failed logins before lockdown
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
     print(f"Monitor Dashboard Online. Connected to {BROKER}")
@@ -31,13 +31,13 @@ def on_message(client, userdata, msg):
         
         print(f"[LOG DETECTED] {log_data['timestamp']} | {event_type} | IP: {source_ip}")
         
-        # --- THE HIGH DISTINCTION AUTOMATION LOGIC ---
+        # Check for failed login attempts
         if event_type == "Failed Login":
             failed_login_count += 1
-            print(f"  ⚠️ Warning: Failed login count is now {failed_login_count}/{THRESHOLD}")
+            print(f"  Warning: Failed login count is now {failed_login_count}/{THRESHOLD}")
             
             if failed_login_count >= THRESHOLD:
-                print("\n🚨 THRESHOLD REACHED! INITIATING AUTOMATED LOCKDOWN 🚨")
+                print("\n THRESHOLD REACHED! INITIATING AUTOMATED LOCKDOWN ")
                 
                 # Craft the automated command
                 action_message = f"LOCKDOWN TRIGGERED: Blocked IP {source_ip} after {THRESHOLD} failed attempts."
@@ -52,7 +52,7 @@ def on_message(client, userdata, msg):
         print("Received malformed log data.")
 
 # Setup the MQTT Client
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
